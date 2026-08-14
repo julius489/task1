@@ -390,7 +390,7 @@ form.oculto{display:none}
       </div>
 
       <div class="reveal">
-        <form id="formConsulta" action="https://formspree.io/f/TU_FORM_ID" method="POST" novalidate>
+        <form id="formConsulta" action="https://formspree.io/f/mkjwzjqr" method="POST" novalidate>
           <input type="hidden" name="_subject" value="Nueva consulta reservada — sitio web">
           <input type="text" name="_gotcha" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0">
           <div class="dupla">
@@ -613,12 +613,6 @@ form.oculto{display:none}
     var errEnvio = document.getElementById("err-envio");
     var nombre = document.getElementById("nombre").value.trim().split(" ")[0];
 
-    // Aviso si aún no se ha reemplazado el ID de Formspree.
-    if(form.getAttribute("action").indexOf("https://formspree.io/f/mkjwzjqr") !== -1){
-      errEnvio.textContent = "Formulario sin configurar: reemplaza TU_FORM_ID por tu ID de Formspree.";
-      return;
-    }
-
     btn.setAttribute("aria-busy","true");
     var etiquetaBtn = btn.childNodes[0];
     var textoOriginal = etiquetaBtn.textContent;
@@ -640,7 +634,11 @@ form.oculto{display:none}
         });
       }
     }).catch(function(){
-      errEnvio.textContent = "No se pudo enviar. Revisa tu conexión o escríbeme directamente al correo.";
+      if(location.protocol === "file:"){
+        errEnvio.textContent = "El envío no funciona abriendo el archivo directamente. Súbelo a GitHub Pages y pruébalo desde la URL https://.";
+      } else {
+        errEnvio.textContent = "No se pudo enviar. Revisa tu conexión o escríbeme directamente al correo.";
+      }
     }).finally(function(){
       btn.removeAttribute("aria-busy");
       etiquetaBtn.textContent = textoOriginal;
