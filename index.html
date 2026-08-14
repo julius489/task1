@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Inka Brasa — Pizza criolla al horno de leña</title>
+<meta name="description" content="Pizzería de sabor peruano: masa napolitana, ajíes de mercado y horno de leña. Lomo saltado, ají de gallina y rocoto sobre la piedra caliente.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+/* ================= tokens ================= */
+:root{
+  --morada:#3D0E52;      /* chicha morada — fondo dominante */
+  --morada-2:#571777;
+  --amarillo:#FFC21A;    /* ají amarillo */
+  --rocoto:#E4361F;      /* rojo rocoto */
+  --lima:#26C281;        /* verde limón / culantro */
+  --limo:#FF7A2F;        /* ají limo, naranja */
+  --hueso:#FFF6E6;
+  --tinta:#1B0A22;
+
+  --display:'Anton',Impact,sans-serif;
+  --texto:'Archivo',system-ui,sans-serif;
+  --mono:'Space Mono',ui-monospace,monospace;
+
+  --marco:clamp(20px,5vw,72px);
+  --aire:clamp(72px,11vw,140px);
+  --borde:rgba(255,246,230,.16);
+  --acento:var(--amarillo); /* cambia según la pizza elegida */
+}
+
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;background:var(--morada);color:var(--hueso);
+  font-family:var(--texto);font-weight:400;font-size:16px;line-height:1.6;
+  -webkit-font-smoothing:antialiased;overflow-x:hidden;
+}
+img,svg{display:block;max-width:100%}
+a{color:inherit;text-decoration:none}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+
+h1,h2,h3{font-family:var(--display);font-weight:400;line-height:.92;margin:0;letter-spacing:.005em;text-transform:uppercase}
+h1{font-size:clamp(3.6rem,15vw,10rem)}
+h2{font-size:clamp(2.6rem,8vw,6rem)}
+h3{font-size:clamp(1.5rem,3.6vw,2.3rem)}
+p{margin:0}
+
+.eyebrow{font-family:var(--mono);font-weight:700;font-size:.74rem;letter-spacing:.24em;text-transform:uppercase;color:var(--acento);transition:color .5s ease}
+.marco{padding-inline:var(--marco);max-width:1440px;margin-inline:auto}
+:focus-visible{outline:3px solid var(--amarillo);outline-offset:3px}
+
+/* ================= header ================= */
+.site-head{position:fixed;inset:0 0 auto 0;z-index:60;transition:background .35s ease,box-shadow .35s ease}
+.site-head.is-scrolled{background:rgba(29,10,37,.86);backdrop-filter:blur(12px);box-shadow:0 1px 0 var(--borde)}
+.head-in{display:flex;align-items:center;justify-content:space-between;gap:16px;height:76px}
+.marca{display:flex;align-items:center;gap:11px;font-family:var(--display);font-size:1.7rem;letter-spacing:.02em}
+.marca .disco{width:26px;height:26px;border-radius:50%;background:
+   radial-gradient(circle at 50% 50%, var(--rocoto) 0 30%, var(--amarillo) 30% 55%, var(--hueso) 55% 100%);
+   box-shadow:0 0 0 2px var(--tinta) inset;flex:none;animation:girar 14s linear infinite}
+@keyframes girar{to{transform:rotate(360deg)}}
+.marca b{color:var(--hueso)}
+.marca b span{color:var(--amarillo)}
+
+.nav-desk{display:none}
+.nav-desk a{font-family:var(--mono);font-weight:700;font-size:.78rem;letter-spacing:.06em;text-transform:uppercase;position:relative;padding-block:6px}
+.nav-desk a::after{content:"";position:absolute;left:0;bottom:0;height:2px;width:0;background:var(--amarillo);transition:width .3s ease}
+.nav-desk a:hover::after,.nav-desk a:focus-visible::after{width:100%}
+
+.btn-pedir{background:var(--rocoto);color:var(--hueso);padding:13px 22px;border-radius:100px;font-family:var(--mono);font-weight:700;font-size:.78rem;letter-spacing:.06em;text-transform:uppercase;transition:transform .25s ease,background .25s ease}
+.btn-pedir:hover{transform:translateY(-2px) rotate(-1.5deg);background:var(--limo)}
+
+.btn-menu{display:flex;flex-direction:column;gap:5px;padding:10px 2px}
+.btn-menu i{width:26px;height:2.5px;background:var(--hueso);transition:transform .3s ease,opacity .25s ease}
+.btn-menu.is-open i:nth-child(1){transform:translateY(7.5px) rotate(45deg)}
+.btn-menu.is-open i:nth-child(2){opacity:0}
+.btn-menu.is-open i:nth-child(3){transform:translateY(-7.5px) rotate(-45deg)}
+
+.panel-nav{position:fixed;inset:76px 0 auto 0;z-index:55;background:var(--morada-2);border-bottom:3px solid var(--amarillo);padding:12px var(--marco) 30px;display:grid;gap:2px;transform:translateY(-10px);opacity:0;pointer-events:none;transition:opacity .28s ease,transform .28s ease}
+.panel-nav.is-open{transform:none;opacity:1;pointer-events:auto}
+.panel-nav a{font-family:var(--display);font-size:2.4rem;text-transform:uppercase;padding-block:8px;border-bottom:1px solid var(--borde)}
+.panel-nav a:last-child{border-bottom:0}
+
+/* ================= hero ================= */
+.hero{position:relative;padding-top:118px;padding-bottom:var(--aire);overflow:hidden}
+.hero-rays{position:absolute;inset:0;z-index:0;background:
+   radial-gradient(120% 90% at 85% -10%, rgba(255,194,26,.22), transparent 55%),
+   radial-gradient(90% 80% at 0% 110%, rgba(228,54,31,.24), transparent 55%)}
+.hero-in{position:relative;z-index:1}
+.hero-top{display:flex;flex-wrap:wrap;gap:10px 18px;align-items:center;font-family:var(--mono);font-weight:700;font-size:.72rem;letter-spacing:.18em;text-transform:uppercase;color:var(--hueso);opacity:.85}
+.hero-top .dot{width:7px;height:7px;border-radius:50%;background:var(--lima)}
+.hero h1{margin:18px 0 0}
+.hero h1 .l2{color:var(--amarillo)}
+.hero h1 .l3{-webkit-text-stroke:2px var(--hueso);color:transparent}
+.hero-grid{display:grid;gap:40px;margin-top:34px}
+.hero-bajada{font-size:clamp(1.05rem,2.2vw,1.3rem);max-width:34ch;color:var(--hueso)}
+.hero-bajada b{color:var(--amarillo);font-weight:700}
+.hero-acciones{display:flex;flex-wrap:wrap;gap:12px;margin-top:30px}
+.cta{display:inline-flex;align-items:center;gap:11px;font-family:var(--mono);font-weight:700;font-size:.8rem;letter-spacing:.05em;text-transform:uppercase;padding:16px 26px;border-radius:100px;transition:transform .25s ease,background .25s ease,color .25s ease}
+.cta--solido{background:var(--amarillo);color:var(--tinta)}
+.cta--solido:hover{transform:translateY(-2px);background:var(--hueso)}
+.cta--linea{border:2px solid var(--hueso);color:var(--hueso)}
+.cta--linea:hover{background:var(--hueso);color:var(--tinta)}
+.cta .fl{width:18px;height:2px;background:currentColor;display:block;transition:width .25s ease}
+.cta:hover .fl{width:28px}
+
+/* sello giratorio del hero */
+.sello{position:relative;width:min(300px,72vw);margin-inline:auto;aspect-ratio:1}
+.sello .txt-aro{animation:girar 22s linear infinite;transform-origin:center}
+.sello .txt-aro text{font-family:var(--mono);font-weight:700;font-size:12.5px;letter-spacing:.34em;fill:var(--hueso);text-transform:uppercase}
+.sello .medallon{fill:var(--rocoto)}
+.sello .pizza{fill:var(--amarillo)}
+.sello .corteza{fill:none;stroke:var(--tinta);stroke-width:5;stroke-dasharray:3 9;opacity:.5}
+.sello .topping{fill:var(--rocoto)}
+.sello .hoja{fill:var(--lima)}
+.sello .pct{font-family:var(--display);font-size:52px;fill:var(--tinta)}
+
+.tira{margin-top:46px;padding:14px 0;border-block:2px solid var(--borde);display:flex;flex-wrap:wrap;gap:8px 30px}
+.tira span{font-family:var(--mono);font-weight:700;font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:var(--hueso);opacity:.9;display:inline-flex;align-items:center;gap:9px}
+.tira span::before{content:"";width:8px;height:8px;background:var(--amarillo);transform:rotate(45deg)}
+
+/* ================= menú / productos ================= */
+.menu{background:var(--hueso);color:var(--tinta);padding-block:var(--aire);position:relative}
+.menu .eyebrow{color:var(--rocoto)}
+.cab{display:grid;gap:14px;margin-bottom:44px}
+.cab h2{color:var(--tinta)}
+.cab p{max-width:46ch;color:#5a4a52}
+.menu-grid{display:grid;gap:40px}
+
+.lista{list-style:none;margin:0;padding:0;border-top:3px solid var(--tinta)}
+.lista li{border-bottom:1px solid rgba(27,10,34,.16)}
+.pz{width:100%;display:grid;grid-template-columns:1fr auto;gap:6px 18px;align-items:baseline;padding:20px 4px;text-align:left;transition:padding-left .3s ease}
+.pz:hover,.pz[aria-pressed="true"]{padding-left:14px}
+.pz-nom{font-family:var(--display);font-size:clamp(1.7rem,4.6vw,2.6rem);line-height:.95;text-transform:uppercase}
+.pz[aria-pressed="true"] .pz-nom{color:var(--rocoto)}
+.pz-precio{font-family:var(--mono);font-weight:700;font-size:.9rem;white-space:nowrap}
+.pz-desc{grid-column:1/-1;font-size:.95rem;color:#5a4a52;max-width:52ch}
+.pz-fuego{grid-column:1/-1;display:flex;align-items:center;gap:8px;margin-top:8px}
+.pz-fuego .lbl{font-family:var(--mono);font-weight:700;font-size:.64rem;letter-spacing:.14em;text-transform:uppercase;color:#8a7a82}
+.aji{width:16px;height:16px}
+.aji path{fill:rgba(27,10,34,.16)}
+.aji.on path{fill:var(--rocoto)}
+
+/* panel de la pizza elegida */
+.ficha{position:sticky;top:100px;background:var(--morada);color:var(--hueso);border-radius:22px;padding:clamp(22px,4vw,34px);overflow:hidden}
+.ficha::before{content:"";position:absolute;inset:0;background:radial-gradient(80% 70% at 80% 0%, color-mix(in srgb, var(--acento) 40%, transparent), transparent 60%);transition:background .5s ease;pointer-events:none}
+.ficha-in{position:relative;z-index:1}
+.ficha-et{font-family:var(--mono);font-weight:700;font-size:.7rem;letter-spacing:.18em;text-transform:uppercase;color:var(--acento);transition:color .5s ease}
+.ficha h3{margin:8px 0 0;color:var(--hueso)}
+.ficha-desc{margin-top:12px;color:rgba(255,246,230,.82);max-width:40ch}
+.ficha-ings{display:flex;flex-wrap:wrap;gap:8px;margin-top:20px}
+.tag{font-family:var(--mono);font-weight:700;font-size:.68rem;letter-spacing:.03em;text-transform:uppercase;border:1.5px solid var(--borde);border-radius:100px;padding:6px 13px}
+.termometro{margin-top:24px;padding-top:20px;border-top:1px solid var(--borde)}
+.termo-top{display:flex;justify-content:space-between;align-items:baseline;font-family:var(--mono);font-weight:700;font-size:.7rem;letter-spacing:.1em;text-transform:uppercase}
+.termo-top .nivel{color:var(--acento);transition:color .5s ease}
+.barra{height:12px;border-radius:100px;background:rgba(255,246,230,.14);margin-top:10px;overflow:hidden}
+.barra i{display:block;height:100%;width:20%;border-radius:100px;background:linear-gradient(90deg,var(--amarillo),var(--limo),var(--rocoto));transition:width .55s cubic-bezier(.22,.7,.25,1)}
+.ficha-pedir{margin-top:24px;background:var(--amarillo);color:var(--tinta);width:100%;justify-content:center}
+.ficha-pedir:hover{background:var(--hueso)}
+
+/* servicios (3 modos) */
+.modos{display:grid;gap:0;margin-top:64px;border-top:3px solid var(--tinta)}
+.modos article{padding:26px 0;border-bottom:1px solid rgba(27,10,34,.16)}
+.modos h3{font-size:clamp(1.4rem,3vw,1.9rem)}
+.modos p{color:#5a4a52;font-size:.95rem;max-width:34ch;margin-top:6px}
+.modos .lbl{font-family:var(--mono);font-weight:700;font-size:.66rem;letter-spacing:.14em;text-transform:uppercase;color:var(--rocoto)}
+
+/* ================= nosotros ================= */
+.nosotros{padding-block:var(--aire);position:relative;overflow:hidden}
+.nosotros-rays{position:absolute;inset:0;background:radial-gradient(80% 60% at 100% 0%, rgba(38,194,129,.16), transparent 55%)}
+.nos-grid{position:relative;display:grid;gap:44px}
+.nos-texto p{color:rgba(255,246,230,.84);max-width:52ch}
+.nos-texto p+p{margin-top:18px}
+.nos-texto .big{font-family:var(--display);font-size:clamp(1.5rem,3vw,2.1rem);line-height:1.05;text-transform:uppercase;color:var(--hueso);margin-bottom:22px}
+.nos-texto .big em{font-style:normal;color:var(--amarillo)}
+.firma{font-family:var(--mono);font-weight:700;font-size:.74rem;letter-spacing:.08em;text-transform:uppercase;color:var(--lima);margin-top:30px}
+
+/* timeline real: masa → horno */
+.linea{list-style:none;margin:0;padding:0;border-top:2px solid var(--borde)}
+.linea li{display:grid;grid-template-columns:66px 1fr;gap:18px;padding:22px 0;border-bottom:2px solid var(--borde);align-items:start}
+.linea .n{font-family:var(--display);font-size:1.7rem;color:var(--amarillo);line-height:1}
+.linea h3{font-size:1.2rem;text-transform:uppercase}
+.linea p{color:rgba(255,246,230,.72);font-size:.92rem;margin-top:4px;max-width:44ch}
+
+/* ================= contacto ================= */
+.contacto{background:var(--amarillo);color:var(--tinta);padding-block:var(--aire)}
+.contacto .eyebrow{color:var(--rocoto)}
+.contacto h2{color:var(--tinta)}
+.contacto-grid{display:grid;gap:48px}
+.info-bloque{border-top:2px solid rgba(27,10,34,.24);padding-top:16px;margin-top:22px}
+.info-bloque dt{font-family:var(--mono);font-weight:700;font-size:.68rem;letter-spacing:.14em;text-transform:uppercase;color:#8a3a10}
+.info-bloque dd{margin:6px 0 0;font-size:1.1rem;font-weight:600}
+.info-bloque dd a{border-bottom:2px solid rgba(27,10,34,.3);transition:border-color .25s ease}
+.info-bloque dd a:hover{border-bottom-color:var(--rocoto)}
+
+form{display:grid;gap:24px}
+.campo{display:grid;gap:7px}
+.campo label{font-family:var(--mono);font-weight:700;font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;color:#8a3a10}
+.campo input,.campo textarea,.campo select{font-family:var(--texto);font-size:1rem;color:var(--tinta);background:var(--hueso);border:2px solid var(--tinta);border-radius:12px;padding:13px 15px;transition:box-shadow .2s ease,transform .2s ease}
+.campo textarea{resize:vertical;min-height:96px}
+.campo input:focus,.campo textarea:focus,.campo select:focus{outline:none;box-shadow:5px 5px 0 var(--rocoto);transform:translate(-1px,-1px)}
+.campo input::placeholder,.campo textarea::placeholder{color:#9a8a80}
+.dupla{display:grid;gap:24px}
+.error{font-family:var(--mono);font-weight:700;font-size:.68rem;color:#B0140A;min-height:1em}
+.campo.malo input,.campo.malo select,.campo.malo textarea{border-color:#B0140A;box-shadow:4px 4px 0 #B0140A}
+.cta-form{background:var(--rocoto);color:var(--hueso);justify-self:start;border:2px solid var(--tinta)}
+.cta-form:hover{background:var(--tinta)}
+.confirmacion{background:var(--morada);color:var(--hueso);border:2px solid var(--tinta);border-radius:18px;padding:32px;display:none}
+.confirmacion.visible{display:block}
+.confirmacion h3{color:var(--amarillo);text-transform:uppercase;margin-bottom:10px}
+.confirmacion p{color:rgba(255,246,230,.85);max-width:42ch}
+.confirmacion button{margin-top:22px;font-family:var(--mono);font-weight:700;font-size:.74rem;letter-spacing:.06em;text-transform:uppercase;color:var(--amarillo);border-bottom:2px solid var(--amarillo);padding-bottom:3px}
+form.oculto{display:none}
+
+/* ================= footer ================= */
+.pie{background:var(--tinta);color:var(--hueso);padding-block:56px 40px}
+.pie-top{display:grid;gap:32px;padding-bottom:34px;border-bottom:1px solid var(--borde)}
+.pie h3{font-size:clamp(2.4rem,8vw,5rem);text-transform:uppercase;line-height:.9}
+.pie h3 span{color:var(--amarillo)}
+.pie-links{display:grid;gap:9px;font-family:var(--mono);font-weight:700;font-size:.78rem;letter-spacing:.05em;text-transform:uppercase;align-content:start}
+.pie-links a{opacity:.72;transition:opacity .25s ease,color .25s ease}
+.pie-links a:hover{opacity:1;color:var(--amarillo)}
+.pie-bajo{display:flex;flex-wrap:wrap;gap:12px 26px;justify-content:space-between;padding-top:24px;font-family:var(--mono);font-size:.68rem;letter-spacing:.05em;opacity:.6}
+
+/* ================= reveal ================= */
+.reveal{opacity:0;transform:translateY(18px);transition:opacity .7s ease,transform .7s cubic-bezier(.22,.7,.25,1)}
+.reveal.visto{opacity:1;transform:none}
+
+/* ================= responsive ================= */
+@media (min-width:720px){
+  .dupla{grid-template-columns:1fr 1fr}
+  .cab{grid-template-columns:1fr 1fr;align-items:end;gap:40px}
+  .pie-top{grid-template-columns:1.5fr 1fr;align-items:end}
+  .modos{grid-template-columns:repeat(3,1fr);gap:0 36px}
+}
+@media (min-width:960px){
+  .btn-menu{display:none}
+  .nav-desk{display:flex;gap:32px;align-items:center}
+  .hero{padding-top:150px}
+  .hero-grid{grid-template-columns:1.25fr .75fr;align-items:center;gap:56px}
+  .hero h1{margin-top:8px}
+  .menu-grid{grid-template-columns:1.05fr .95fr;gap:64px;align-items:start}
+  .nos-grid{grid-template-columns:1.05fr .95fr;gap:72px;align-items:start}
+  .contacto-grid{grid-template-columns:.8fr 1.2fr;gap:72px}
+  .linea li{grid-template-columns:80px 1fr}
+}
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  *,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}
+  .reveal{opacity:1;transform:none}
+}
+</style>
+</head>
+<body>
+
+<header class="site-head" id="cabecera">
+  <div class="marco head-in">
+    <a href="#inicio" class="marca" aria-label="Inka Brasa, inicio">
+      <span class="disco" aria-hidden="true"></span>
+      <b>Inka<span>Brasa</span></b>
+    </a>
+    <nav class="nav-desk" aria-label="Principal">
+      <a href="#menu">Carta</a>
+      <a href="#nosotros">Nosotros</a>
+      <a href="#contacto">Contacto</a>
+      <a href="#contacto" class="btn-pedir">Pedir ahora</a>
+    </nav>
+    <button class="btn-menu" id="btnMenu" aria-expanded="false" aria-controls="panelNav" aria-label="Abrir menú">
+      <i></i><i></i><i></i>
+    </button>
+  </div>
+</header>
+
+<nav class="panel-nav" id="panelNav" aria-label="Menú móvil">
+  <a href="#menu">Carta</a>
+  <a href="#nosotros">Nosotros</a>
+  <a href="#contacto">Contacto</a>
+  <a href="#contacto">Pedir ahora</a>
+</nav>
+
+<main>
+
+  <!-- ============ HERO ============ -->
+  <section class="hero" id="inicio">
+    <div class="hero-rays" aria-hidden="true"></div>
+    <div class="marco hero-in">
+      <div class="hero-top">
+        <span class="dot" aria-hidden="true"></span>
+        <span>Horno de leña · Lima</span>
+        <span>Masa fermentada 48 h</span>
+        <span>Ají de mercado</span>
+      </div>
+
+      <h1>Pizza<br><span class="l2">con sazón</span><br><span class="l3">criolla</span></h1>
+
+      <div class="hero-grid">
+        <div>
+          <p class="hero-bajada">Masa napolitana, piedra a <b>450 °C</b> y los ajíes de siempre: amarillo, rocoto y limo. La pizza de toda la vida, pero hablando peruano.</p>
+          <div class="hero-acciones">
+            <a href="#menu" class="cta cta--solido">Ver la carta <span class="fl"></span></a>
+            <a href="#contacto" class="cta cta--linea">Pedir ahora <span class="fl"></span></a>
+          </div>
+        </div>
+
+        <div class="sello" aria-hidden="true">
+          <svg viewBox="0 0 300 300" role="img">
+            <circle class="medallon" cx="150" cy="150" r="150"></circle>
+            <g class="txt-aro">
+              <defs><path id="aro" d="M150,150 m-118,0 a118,118 0 1,1 236,0 a118,118 0 1,1 -236,0"></path></defs>
+              <text><textPath href="#aro" startOffset="0%">Inka Brasa · pizza al horno de leña · sabor peruano · </textPath></text>
+            </g>
+            <circle class="pizza" cx="150" cy="150" r="84"></circle>
+            <circle class="corteza" cx="150" cy="150" r="72"></circle>
+            <circle class="topping" cx="128" cy="126" r="9"></circle>
+            <circle class="topping" cx="176" cy="140" r="9"></circle>
+            <circle class="topping" cx="140" cy="176" r="9"></circle>
+            <circle class="topping" cx="178" cy="176" r="7"></circle>
+            <path class="hoja" d="M150 120 q14 10 0 26 q-14-16 0-26Z"></path>
+          </svg>
+        </div>
+      </div>
+
+      <div class="tira">
+        <span>Delivery en Lima</span>
+        <span>Para recoger</span>
+        <span>Salón familiar</span>
+        <span>Masa madre</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ MENÚ / PRODUCTOS ============ -->
+  <section class="menu" id="menu">
+    <div class="marco">
+      <div class="cab reveal">
+        <div>
+          <p class="eyebrow">La carta</p>
+          <h2>Ocho pizzas,<br>cada una con su ají</h2>
+        </div>
+        <p>Toca una pizza para ver de qué está hecha y qué tan picante viene. El termómetro no miente.</p>
+      </div>
+
+      <div class="menu-grid">
+        <ul class="lista reveal" id="listaPizzas"></ul>
+
+        <div class="ficha reveal">
+          <div class="ficha-in">
+            <p class="ficha-et" id="fEt">Pizza elegida</p>
+            <h3 id="fNom">—</h3>
+            <p class="ficha-desc" id="fDesc">—</p>
+            <div class="ficha-ings" id="fIngs"></div>
+            <div class="termometro">
+              <div class="termo-top">
+                <span>Nivel de picante</span>
+                <span class="nivel" id="fNivelTxt">—</span>
+              </div>
+              <div class="barra"><i id="fBarra"></i></div>
+            </div>
+            <a href="#contacto" class="cta ficha-pedir">Pedir esta pizza <span class="fl"></span></a>
+          </div>
+        </div>
+      </div>
+
+      <div class="modos reveal">
+        <article>
+          <span class="lbl">Modo 01</span>
+          <h3>Delivery</h3>
+          <p>A toda Lima moderna. Caja térmica para que llegue como recién salida.</p>
+        </article>
+        <article>
+          <span class="lbl">Modo 02</span>
+          <h3>Para recoger</h3>
+          <p>Pide por WhatsApp y recógela en 20 minutos. Sin colas.</p>
+        </article>
+        <article>
+          <span class="lbl">Modo 03</span>
+          <h3>Salón</h3>
+          <p>Mesas grandes para la familia, con el horno a la vista.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ NOSOTROS ============ -->
+  <section class="nosotros" id="nosotros">
+    <div class="nosotros-rays" aria-hidden="true"></div>
+    <div class="marco nos-grid">
+      <div class="nos-texto reveal">
+        <p class="eyebrow">Nosotros</p>
+        <p class="big">Empezó en una <em>cocina de barrio</em> de Surquillo, con un horno prestado y demasiado ají.</p>
+        <p>Inka Brasa nació de una necedad: que una pizza podía saber a domingo en casa. Juntamos la masa napolitana que aprendimos a fermentar dos días con las salsas con las que crecimos —el ají amarillo, el rocoto, la huancaína— y dejamos que la piedra caliente hiciera el resto.</p>
+        <p>Hoy amasamos cada mañana, molemos los ajíes frescos y horneamos al pedido. Compramos a caseras del mercado de Surquillo, no a catálogos. Por eso hacemos pocas pizzas al día y por eso saben como saben.</p>
+        <p class="firma">— Marco y la familia Quispe, pizzeros con sazón</p>
+      </div>
+
+      <ol class="linea reveal">
+        <li><span class="n">01</span><div><h3>Amasado</h3><p>Harina, agua, sal y masa madre. La levadura entra con cuentagotas.</p></div></li>
+        <li><span class="n">02</span><div><h3>48 horas en frío</h3><p>La masa descansa dos días. Ahí aparece el sabor y el borde alveolado.</p></div></li>
+        <li><span class="n">03</span><div><h3>Ají fresco</h3><p>Molemos amarillo, rocoto y limo el mismo día. Nada de pasta enlatada.</p></div></li>
+        <li><span class="n">04</span><div><h3>90 s de leña</h3><p>Piso de piedra a 450 °C. Sale con la leña todavía crepitando.</p></div></li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- ============ CONTACTO ============ -->
+  <section class="contacto" id="contacto">
+    <div class="marco contacto-grid">
+      <div class="reveal">
+        <p class="eyebrow">Pedidos y reservas</p>
+        <h2>Se te antojó,<br>¿no?</h2>
+        <dl class="info-bloque">
+          <dt>Dirección</dt>
+          <dd>Av. Angamos Este 1234, Surquillo, Lima</dd>
+        </dl>
+        <dl class="info-bloque">
+          <dt>WhatsApp</dt>
+          <dd><a href="https://wa.me/51900000000" target="_blank" rel="noopener">+51 900 000 000</a></dd>
+        </dl>
+        <dl class="info-bloque">
+          <dt>Horario</dt>
+          <dd>Martes a domingo · 12:00 p. m. – 11:00 p. m.</dd>
+        </dl>
+        <dl class="info-bloque">
+          <dt>Correo</dt>
+          <dd><a href="mailto:hola@inkabrasa.pe">hola@inkabrasa.pe</a></dd>
+        </dl>
+      </div>
+
+      <div class="reveal">
+        <form id="formPedido" novalidate>
+          <div class="dupla">
+            <div class="campo">
+              <label for="nombre">Nombre</label>
+              <input type="text" id="nombre" name="nombre" placeholder="¿A nombre de quién?" autocomplete="name">
+              <span class="error" id="err-nombre" role="alert"></span>
+            </div>
+            <div class="campo">
+              <label for="telefono">Celular</label>
+              <input type="tel" id="telefono" name="telefono" placeholder="9 dígitos" autocomplete="tel" inputmode="numeric">
+              <span class="error" id="err-telefono" role="alert"></span>
+            </div>
+          </div>
+
+          <div class="dupla">
+            <div class="campo">
+              <label for="pizza">Tu pizza</label>
+              <select id="pizza" name="pizza"></select>
+              <span class="error" id="err-pizza" role="alert"></span>
+            </div>
+            <div class="campo">
+              <label for="modo">Cómo la quieres</label>
+              <select id="modo" name="modo">
+                <option value="delivery">Delivery</option>
+                <option value="recojo">Para recoger</option>
+                <option value="salon">Mesa en el salón</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="campo">
+            <label for="nota">Algo más</label>
+            <textarea id="nota" name="nota" placeholder="Sin cebolla, extra ají, dirección exacta…"></textarea>
+          </div>
+
+          <button type="submit" class="cta cta-form">Enviar pedido <span class="fl"></span></button>
+        </form>
+
+        <div class="confirmacion" id="confirmacion" role="status" tabindex="-1">
+          <h3>¡Pedido anotado!</h3>
+          <p id="textoConfirma">Te escribimos al WhatsApp para confirmar tiempo y total.</p>
+          <button type="button" id="btnOtro">Hacer otro pedido</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="pie">
+  <div class="marco">
+    <div class="pie-top">
+      <h3>Prende el<br>horno, <span>ya vamos</span></h3>
+      <div class="pie-links">
+        <a href="#menu">Carta</a>
+        <a href="#nosotros">Nosotros</a>
+        <a href="#contacto">Contacto</a>
+        <a href="https://wa.me/51900000000" target="_blank" rel="noopener">WhatsApp</a>
+        <a href="mailto:hola@inkabrasa.pe">hola@inkabrasa.pe</a>
+      </div>
+    </div>
+    <div class="pie-bajo">
+      <span>Inka Brasa · Av. Angamos Este 1234, Surquillo</span>
+      <span>Martes a domingo · 12 – 23 h</span>
+      <span>© <span id="anio"></span> Inka Brasa</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+(function(){
+  "use strict";
+  var NS = "http://www.w3.org/2000/svg";
+  var reducido = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  document.getElementById("anio").textContent = new Date().getFullYear();
+
+  /* ---------- header ---------- */
+  var cabecera = document.getElementById("cabecera");
+  window.addEventListener("scroll", function(){
+    cabecera.classList.toggle("is-scrolled", window.scrollY > 20);
+  }, {passive:true});
+
+  /* ---------- menú móvil ---------- */
+  var btnMenu = document.getElementById("btnMenu");
+  var panelNav = document.getElementById("panelNav");
+  function cerrarMenu(){
+    btnMenu.classList.remove("is-open");
+    panelNav.classList.remove("is-open");
+    btnMenu.setAttribute("aria-expanded","false");
+    btnMenu.setAttribute("aria-label","Abrir menú");
+  }
+  btnMenu.addEventListener("click", function(){
+    var abierto = panelNav.classList.toggle("is-open");
+    btnMenu.classList.toggle("is-open", abierto);
+    btnMenu.setAttribute("aria-expanded", String(abierto));
+    btnMenu.setAttribute("aria-label", abierto ? "Cerrar menú" : "Abrir menú");
+  });
+  panelNav.querySelectorAll("a").forEach(function(a){ a.addEventListener("click", cerrarMenu); });
+  document.addEventListener("keydown", function(e){ if(e.key === "Escape") cerrarMenu(); });
+
+  /* ---------- datos: pizzas ---------- */
+  var pizzas = [
+    { nombre:"Lomo Saltado", precio:"S/ 46", nivel:2, acento:"var(--limo)",
+      desc:"Lomo salteado con cebolla y tomate al wok, sillao y culantro sobre mozzarella.",
+      ings:["Lomo de res","Cebolla roja","Tomate","Sillao","Culantro"] },
+    { nombre:"Ají de Gallina", precio:"S/ 44", nivel:3, acento:"var(--amarillo)",
+      desc:"Crema de ají amarillo y pollo deshilachado, con parmesano y aceituna botija.",
+      ings:["Ají amarillo","Pollo","Parmesano","Aceituna","Pecana"] },
+    { nombre:"Rocoto Relleno", precio:"S/ 48", nivel:5, acento:"var(--rocoto)",
+      desc:"La arequipeña brava: rocoto, carne aliñada, huacatay y queso que se estira.",
+      ings:["Rocoto","Carne molida","Huacatay","Queso fresco","Pasas"] },
+    { nombre:"Huancaína Clásica", precio:"S/ 40", nivel:2, acento:"var(--amarillo)",
+      desc:"Salsa huancaína como base, papa amarilla en láminas y huevo de codorniz.",
+      ings:["Salsa huancaína","Papa amarilla","Huevo de codorniz","Queso"] },
+    { nombre:"Anticuchera", precio:"S/ 47", nivel:3, acento:"var(--rocoto)",
+      desc:"Corazón anticuchero marinado en panca, choclo tostado y chimichurri criollo.",
+      ings:["Anticucho","Ají panca","Choclo","Chimichurri"] },
+    { nombre:"Chancho al Palo", precio:"S/ 45", nivel:1, acento:"var(--limo)",
+      desc:"Panceta dorada estilo al palo, camote glaseado y un toque de chicha de jora.",
+      ings:["Panceta","Camote","Chicha de jora","Romero"] },
+    { nombre:"Verde Selvática", precio:"S/ 43", nivel:4, acento:"var(--lima)",
+      desc:"Ají charapita y cocona con plátano bellaco, chorizo regional y cebollita china.",
+      ings:["Ají charapita","Cocona","Plátano bellaco","Chorizo"] },
+    { nombre:"Margarita del Puerto", precio:"S/ 36", nivel:0, acento:"var(--lima)",
+      desc:"Para los sin miedo al sabor pero sí al picante: tomate, albahaca y mozzarella fresca.",
+      ings:["San Marzano","Albahaca","Mozzarella","Aceite de oliva"] },
+  ];
+
+  var NIVELES = ["Sin picante","Suavecito","Medio","Pica rico","Bravo","Al rojo vivo"];
+  var lista = document.getElementById("listaPizzas");
+  var raiz = document.documentElement;
+
+  var fEt = document.getElementById("fEt");
+  var fNom = document.getElementById("fNom");
+  var fDesc = document.getElementById("fDesc");
+  var fIngs = document.getElementById("fIngs");
+  var fNivelTxt = document.getElementById("fNivelTxt");
+  var fBarra = document.getElementById("fBarra");
+
+  function ajiSVG(activo){
+    return '<svg class="aji' + (activo ? ' on':'') + '" viewBox="0 0 24 24" aria-hidden="true">' +
+      '<path d="M14 3c0 2 1 3 3 3-.2 2.4-1 3.6-1 3.6C15.4 15 11.8 20 7 21c-3 .6-5-1-5-3 0-1.6 1.4-2.4 3-3 3.2-1.2 5.6-4 6.6-7.4C12.4 5 13 3.6 14 3Z"/></svg>';
+  }
+
+  function pintarFicha(p){
+    raiz.style.setProperty("--acento", p.acento);
+    fEt.textContent = "Pizza elegida";
+    fNom.textContent = p.nombre;
+    fDesc.textContent = p.desc;
+    fIngs.innerHTML = p.ings.map(function(i){
+      var s = document.createElement("span"); s.className="tag"; s.textContent=i; return s.outerHTML;
+    }).join("");
+    fNivelTxt.textContent = NIVELES[p.nivel];
+    // barra: 8% base + tramo por nivel (0..5)
+    var pct = p.nivel === 0 ? 6 : 8 + p.nivel * 18;
+    fBarra.style.width = pct + "%";
+  }
+
+  function seleccionar(indice){
+    var items = lista.querySelectorAll(".pz");
+    items.forEach(function(b,i){ b.setAttribute("aria-pressed", String(i===indice)); });
+    pintarFicha(pizzas[indice]);
+  }
+
+  pizzas.forEach(function(p,i){
+    var li = document.createElement("li");
+    var b = document.createElement("button");
+    b.type="button"; b.className="pz"; b.setAttribute("aria-pressed","false");
+    var chiles = "";
+    for(var k=0;k<5;k++) chiles += ajiSVG(k < p.nivel);
+    b.innerHTML =
+      '<span class="pz-nom"></span>' +
+      '<span class="pz-precio"></span>' +
+      '<span class="pz-desc"></span>' +
+      '<span class="pz-fuego"><span class="lbl">Picante</span>' + chiles + '</span>';
+    b.querySelector(".pz-nom").textContent = p.nombre;
+    b.querySelector(".pz-precio").textContent = p.precio;
+    b.querySelector(".pz-desc").textContent = p.desc;
+    b.addEventListener("click", function(){ seleccionar(i); });
+    li.appendChild(b);
+    lista.appendChild(li);
+  });
+  seleccionar(1); // arranca en Ají de Gallina
+
+  /* ---------- poblar select del formulario ---------- */
+  var selPizza = document.getElementById("pizza");
+  pizzas.forEach(function(p){
+    var o = document.createElement("option");
+    o.value = p.nombre; o.textContent = p.nombre + " — " + p.precio;
+    selPizza.appendChild(o);
+  });
+  selPizza.value = pizzas[1].nombre;
+
+  /* ---------- reveal ---------- */
+  var reveals = document.querySelectorAll(".reveal");
+  if(reducido || !("IntersectionObserver" in window)){
+    reveals.forEach(function(el){ el.classList.add("visto"); });
+  } else {
+    var obs = new IntersectionObserver(function(ents){
+      ents.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add("visto"); obs.unobserve(e.target); } });
+    }, {threshold:0.12, rootMargin:"0px 0px -8% 0px"});
+    reveals.forEach(function(el){ obs.observe(el); });
+  }
+
+  /* ---------- enlazar "pedir esta pizza" con el select ---------- */
+  document.querySelector(".ficha-pedir").addEventListener("click", function(){
+    var activa = lista.querySelector('.pz[aria-pressed="true"] .pz-nom');
+    if(activa) selPizza.value = activa.textContent;
+  });
+
+  /* ---------- formulario ---------- */
+  var form = document.getElementById("formPedido");
+  var confirmacion = document.getElementById("confirmacion");
+  var textoConfirma = document.getElementById("textoConfirma");
+
+  function marcar(id,msg){
+    var input = document.getElementById(id);
+    var campo = input.closest(".campo");
+    document.getElementById("err-"+id).textContent = msg || "";
+    campo.classList.toggle("malo", Boolean(msg));
+    return !msg;
+  }
+
+  function validar(){
+    var ok = true;
+    var nombre = document.getElementById("nombre").value.trim();
+    var tel = document.getElementById("telefono").value.replace(/\D/g,"");
+    ok = marcar("nombre", nombre.length>=2 ? "" : "Escribe tu nombre.") && ok;
+    ok = marcar("telefono", tel.length===9 ? "" : "Celular de 9 dígitos, para confirmarte.") && ok;
+    return ok;
+  }
+
+  form.addEventListener("submit", function(e){
+    e.preventDefault();
+    if(!validar()){
+      var primero = form.querySelector(".campo.malo input, .campo.malo select");
+      if(primero) primero.focus();
+      return;
+    }
+    var nombre = document.getElementById("nombre").value.trim().split(" ")[0];
+    var pizza = selPizza.value;
+    var modo = document.getElementById("modo");
+    var etiqueta = modo.options[modo.selectedIndex].text.toLowerCase();
+    textoConfirma.textContent = "¡Gracias, " + nombre + "! Anotamos una " + pizza +
+      " (" + etiqueta + "). Te escribimos al WhatsApp para confirmar tiempo y total.";
+    form.classList.add("oculto");
+    confirmacion.classList.add("visible");
+    confirmacion.focus();
+  });
+
+  document.getElementById("btnOtro").addEventListener("click", function(){
+    form.reset();
+    selPizza.value = pizzas[1].nombre;
+    ["nombre","telefono"].forEach(function(id){ marcar(id,""); });
+    confirmacion.classList.remove("visible");
+    form.classList.remove("oculto");
+    document.getElementById("nombre").focus();
+  });
+})();
+</script>
+</body>
+</html>
