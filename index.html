@@ -184,6 +184,7 @@ form{display:grid;gap:24px}
 .error{font-family:var(--mono);font-size:.66rem;color:#D98A6A;min-height:1em}
 .campo.malo input,.campo.malo select,.campo.malo textarea{border-color:#D98A6A}
 .cta-form{justify-self:start}
+#btnEnviar[aria-busy="true"]{opacity:.6;pointer-events:none}
 .confirmacion{border:1px solid var(--laton);border-radius:4px;background:var(--carbon);padding:34px;display:none}
 .confirmacion.visible{display:block}
 .confirmacion h3{color:var(--laton);margin-bottom:12px}
@@ -389,7 +390,9 @@ form.oculto{display:none}
       </div>
 
       <div class="reveal">
-        <form id="formConsulta" novalidate>
+        <form id="formConsulta" action="https://formspree.io/f/TU_FORM_ID" method="POST" novalidate>
+          <input type="hidden" name="_subject" value="Nueva consulta reservada — sitio web">
+          <input type="text" name="_gotcha" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0">
           <div class="dupla">
             <div class="campo">
               <label for="nombre">Nombre</label>
@@ -431,7 +434,8 @@ form.oculto{display:none}
             <span class="error" id="err-mensaje" role="alert"></span>
           </div>
 
-          <button type="submit" class="cta cta--oro cta-form">Enviar consulta <span class="fl"></span></button>
+          <button type="submit" class="cta cta--oro cta-form" id="btnEnviar">Enviar consulta <span class="fl"></span></button>
+          <span class="error" id="err-envio" role="alert"></span>
         </form>
 
         <div class="confirmacion" id="confirmacion" role="status" tabindex="-1">
@@ -598,21 +602,55 @@ form.oculto{display:none}
 
   form.addEventListener("submit", function(e){
     e.preventDefault();
+    document.getElementById("err-envio").textContent = "";
     if(!validar()){
       var primero = form.querySelector(".campo.malo input, .campo.malo textarea, .campo.malo select");
       if(primero) primero.focus();
       return;
     }
+
+    var btn = document.getElementById("btnEnviar");
+    var errEnvio = document.getElementById("err-envio");
     var nombre = document.getElementById("nombre").value.trim().split(" ")[0];
-    textoConfirma.textContent = "Gracias, " + nombre + ". Responderé a tu correo en un plazo de 24 horas para coordinar una reunión confidencial.";
-    form.classList.add("oculto");
-    confirmacion.classList.add("visible");
-    confirmacion.focus();
+
+    // Aviso si aún no se ha reemplazado el ID de Formspree.
+    if(form.getAttribute("action").indexOf("https://formspree.io/f/mkjwzjqr") !== -1){
+      errEnvio.textContent = "Formulario sin configurar: reemplaza TU_FORM_ID por tu ID de Formspree.";
+      return;
+    }
+
+    btn.setAttribute("aria-busy","true");
+    var etiquetaBtn = btn.childNodes[0];
+    var textoOriginal = etiquetaBtn.textContent;
+    etiquetaBtn.textContent = "Enviando… ";
+
+    fetch(form.getAttribute("action"), {
+      method:"POST",
+      body:new FormData(form),
+      headers:{ "Accept":"application/json" }
+    }).then(function(res){
+      if(res.ok){
+        textoConfirma.textContent = "Gracias, " + nombre + ". Responderé a tu correo en un plazo de 24 horas para coordinar una reunión confidencial.";
+        form.classList.add("oculto");
+        confirmacion.classList.add("visible");
+        confirmacion.focus();
+      } else {
+        return res.json().then(function(d){
+          throw new Error((d && d.errors && d.errors[0] && d.errors[0].message) || "Error del servidor");
+        });
+      }
+    }).catch(function(){
+      errEnvio.textContent = "No se pudo enviar. Revisa tu conexión o escríbeme directamente al correo.";
+    }).finally(function(){
+      btn.removeAttribute("aria-busy");
+      etiquetaBtn.textContent = textoOriginal;
+    });
   });
 
   document.getElementById("btnOtro").addEventListener("click", function(){
     form.reset();
     ["nombre","correo","mensaje"].forEach(function(id){ marcar(id,""); });
+    document.getElementById("err-envio").textContent = "";
     confirmacion.classList.remove("visible");
     form.classList.remove("oculto");
     document.getElementById("nombre").focus();
